@@ -20,6 +20,7 @@ from vllm.v1.request import Request, RequestStatus
 from vllm.v1.spec_decode.metrics import SpecDecodingStats
 
 from vllm_omni.core.sched.output import OmniSchedulerOutput
+from vllm_omni.core.sched.pooler_utils import select_pooler_output
 from vllm_omni.distributed.omni_connectors.adapter import get_chunk, put_chunk
 from vllm_omni.distributed.omni_connectors.factory import OmniConnectorFactory
 from vllm_omni.distributed.omni_connectors.utils.config import ConnectorSpec
@@ -281,7 +282,7 @@ class OmniARScheduler(VLLMScheduler):
             stopped = False
             new_logprobs = None
             new_token_ids = generated_token_ids
-            pooler_output = pooler_outputs[req_index] if pooler_outputs else None
+            pooler_output = select_pooler_output(pooler_outputs, req_index)
             kv_transfer_params = None
             status_before_stop = request.status
             finish_reason = None
